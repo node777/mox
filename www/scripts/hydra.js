@@ -12,11 +12,10 @@ var hydra = {
   
   chains: [
   ],
-  connect:(t)=>{
+  connect:async(t)=>{
     if(t=="web3"){
       if(hydra.account){
         alert("account already connected, please log out to import account")
-        location.hash = "account"; 
       }
       else{
         hydra.account={
@@ -25,8 +24,22 @@ var hydra = {
         hydra.provider = new ethers.providers.Web3Provider(web3.currentProvider);
         hydra.signer = hydra.provider.getSigner();
         hydra.save();
-        location.hash = "account";
       }
+    }else if(t=="torus"){
+      
+      hydra.account={
+        type:"torus"
+      }
+      
+      torus = new Torus();
+      await torus.init();
+      await torus.login();
+      hydra.provider = await new ethers.providers.Web3Provider(torus.provider);
+      hydra.provider.provider.selectedAddress=torus.provider.selectedAddress;
+
+      hydra.signer = hydra.provider.getSigner();
+      hydra.save();
+      
     }else if(t=="create"){
       hydra.account={
         type:"key"
@@ -98,6 +111,8 @@ var hydra = {
   post:async(ip, d)=>{
     var callParams=ip.split("/");
     var inv = callParams[callParams.length-1];
+    let chainHash=callParams[1]
+    console.log(callParams);
     var k=function(){
       if(hydra.provider){
         try{
@@ -120,7 +135,7 @@ var hydra = {
       var c = JSON.parse(hydra.get(hydra.chains[hux.cid].ip));
       let prevHash=c[c.length-1].h;
       var block={
-        p: prevHash,
+        c:chainHash,
         t: Date.now(),
         k:k(),
         i:inv,
@@ -171,15 +186,26 @@ var hydra = {
           hydra.provider = await new ethers.providers.Web3Provider(web3.currentProvider);
           hydra.signer = await hydra.provider.getSigner();
         }
+        if(hydra.account.type=="torus"){
+          await hydra.connect("torus");
+        }
       }catch(e){
         console.log("NOT A WEB3 USER");
       }
     }
   },
   getBalance:async()=>{
-    await hydra.provider.getBalance(hydra.provider.provider.selectedAddress).then((balance) => {
-      hydra.account.balance = ethers.utils.formatEther(balance);
-    });
+    try{
+      await hydra.provider.getBalance(hydra.provider.provider.selectedAddress).then((balance) => {
+        hydra.account.balance = ethers.utils.formatEther(balance);
+      });
+    }
+    catch(e){
+      await hydra.provider.balance.get(hydra.provider.provider.selectedAddress).then((balance) => {
+        hydra.account.balance = ethers.utils.formatEther(balance);
+      });
+
+    }
   },
   sendTransaction:async()=>{
     let transaction = JSON.parse(document.getElementById("tx").value)
@@ -187,6 +213,10 @@ var hydra = {
     web3.eth.sendTransaction(transaction);
    },
   clear: function(){
+    if(hydra.account.type=="torus"){
+      
+      torus.logout();
+    }
     localStorage.clear();
     hydra.account=null;
     hydra.chains=[];

@@ -1,33 +1,6 @@
 var elements={
     pages:{
-        ur:()=>{
-            var r;
-            try{
-                if(hydra.account.type=="web3"){
-                    ethereum.enable()
-                }
-                r=`
-                <div>
-                    <h1>Welcome back, `+(hydra.account.name||hydra.account.type+" user"||"user")+`</h1>
-                    <div class="w50 button" onclick="location.hash='chains';">Chains</div>
-                    <div class="w50 button" onclick="location.hash='playground';">Playground</div>
-                    <div class="w50 button" onclick="location.hash='account';">Account</div>
-                </div>
-                `;
-            }
-            catch(e){
-                r=`
-                <div>
-                    <h1>UR</h1>
-                    <h2>The world's fastest CryptoCurrency</h2>
-                    <div class="w50 button" onclick="location.hash='connect'">Connect</div>
-                </div>
-                `;
-            }
-            return r
-
-        },
-        splash: function(){
+        "splash":()=>{
             var r;
             try{
                 if(hydra.account.type=="web3"){
@@ -62,7 +35,8 @@ var elements={
         },
         'account': async()=>{
             try{
-                if(hydra.account.type=="web3"){
+                let wb;
+                if(hydra.account.type=="web3"||hydra.account.type=="torus"){
                     try{
                         
                         if(!hydra.balance){
@@ -86,16 +60,14 @@ var elements={
                         Selected Address: ${(p.getBalance(p.provider.selectedAddress))||"none"}<br>`
                         */
                     }catch(e){
-                        
-                        await ethereum.enable();
+                        console.log(e);
                         hydra.load();
-                        lux.changePage();
                     }
                 }
                 else if(hydra.account.type=="key"){
                     wb=`
                     Address: <div id="address" value='${hydra.account.wallets[0].signingKey.address}'>${hydra.account.wallets[0].signingKey.address}</div><div class="button" onclick="hux.copyKey()">Copy</div><br><br>`
-                    //todo for loop wallets
+                    
                 }
                 return`
                     <h1>Account Info:</h1>
@@ -112,16 +84,13 @@ var elements={
             }
         },
         "connect":()=>{
-            try{
-                return `<div>
-                    <h1>Welcome back, `+JSON.parse(localStorage.user).name+`</h1>
-                    <div class="w50 button" onclick="location.hash='chains';">Chains</div>
-                    <div class="w50 button" onclick="location.hash='account';">Account</div>
-                </div>`
-            }catch(e){
+            if(hydra.account){
+                location.hash="account"
+            }else{
                 return `
                     No account could be found on this device, would you like to import or create a new one?
                     <div class="w50 button" onclick="hydra.connect('web3');">Import From Provider (coinbase/metamask/web3)</div>
+                    <div class="w50 button" onclick="hydra.connect('torus');">Connect with Torus</div>
                     <div class="w50 button" onclick="hydra.connect('create');">Create New</div>
                 `;
             }
@@ -192,7 +161,7 @@ var elements={
                         </div>
                         <h1>Node Interaction</h1>
                         <div class="w1 box">
-                            <div class="chain button" onmouseup="hux.query()">
+                            <div class="chain button" onmouseup="hux.getChain()">
                                 QueryChain
                             </div>
                             <div class="flex">
@@ -298,14 +267,6 @@ var elements={
         <div class="br"></div>
         <div onclick="location.hash='account';"><div>Account</div></div>
     `,
-    "urHeader":`
-        <div id="hb" onclick="lux.sidebar()">
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-        Ur Explorer
-        <div id="account">Acc</div>
-    `,
     "loading":`Loading...`
 }
+O(n)

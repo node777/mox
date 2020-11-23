@@ -22,9 +22,27 @@ var multiGenisis={
     return transaction;
   },
   block:(tx)=>{
-    console.log(hydra.chains[multiGenisis.h], multiGenisis.h);
-    tx.p=hydra.chains[multiGenisis.h][hydra.chains[multiGenisis.h].length-1].h
-    tx.h=multiGenisis.hash(JSON.stringify(tx));
+    let thisChain=hydra.chains[multiGenisis.h]
+    console.log(thisChain.length-1, thisChain[thisChain.length-1].length);
+
+    //check if there is only genisis
+    if(thisChain.length=1){
+
+      thisChain.push([{p:multiGenisis.h}]);
+    }
+    //push tx
+    let t=tx;
+    thisChain[thisChain.length-1].push(t);
+
+    if(thisChain[thisChain.length-1].length>=10){
+      //create block hash
+      let h=multiGenisis.hash(JSON.stringify(thisChain[thisChain.length-1]));
+      //add hash to end
+      thisChain[thisChain.length-1].push(h);
+      //start new block with first tx as hash
+      
+      thisChain.push([{p:h}]);
+    }
     return tx
   },
   chaincode:{
@@ -45,7 +63,6 @@ var multiGenisis={
     }
   },
 }
-
 
 function flatten(obj){
   //todo fix this flatten fn, maye just find replacement

@@ -8,7 +8,7 @@ const multiGenisis=require("./chains/multi-chain.genisis.block.js");
 const urGenisis=require("./chains/ur.genisis.block.js");
 
 hydra.create(defaultGenisis);
-// hydra.create(multiGenisis);
+ hydra.create(multiGenisis);
 // hydra.create(urGenisis);
 
 const app = express();

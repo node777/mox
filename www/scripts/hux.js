@@ -9,7 +9,7 @@ var hux={
     post: function(){
         return hux.chainData().ip+"/invoke/"
     },
-    query: function(){
+    getChain: function(){
         try{
             let r="";
             let blockObj=hydra.get(hux.chainData().ip);
@@ -17,8 +17,8 @@ var hux={
             let blocks=JSON.parse(blockObj);
             for(block in blocks){
                 var b = blocks[block];
+                console.log(b);
                 if(block!=0){
-                    console.log(b);
                     r+=`
                         <div class='block box'>
                             <div>
@@ -31,10 +31,9 @@ var hux={
                                 Block Hash:<br>${b.h}<br><br>
                             </div>
                         </div>`;
-                }
-                else{
+                }else{
                     r+=`
-                        <div class='block box'>`
+                        <div class='block box'>GENISIS BLOCK<br><br>`
                         for(d in b){
                             r+=`${d}: <br>${b[d]}<br><br>`;
                         }
