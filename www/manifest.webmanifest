@@ -1,0 +1,15 @@
+{
+    "short_name": "Blocknet",
+    "name": "𝖡𝖫𝖮𝖢𝖪𝖭𝖤𝖳",
+    "description": "Welcome to the new internet",
+    "icons": [
+    ],
+    "start_url": "/?source=pwa",
+    "background_color": "#3367D6",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#3367D6",
+    "bluetooth": {
+        "socket": true
+    }
+}

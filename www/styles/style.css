@@ -1,0 +1,206 @@
+/*root elements*/
+:root{
+    --color1: #dde;
+    --color2: #222;
+    --color3: rgb(51, 47, 50);
+    --color4: rgb(82, 90, 37);
+    --color5: rgb(48, 4, 4);
+    --color6: rgb(68, 19, 19);
+}
+body{
+    background-color: var(--color1);
+    color: var(--color2);
+    text-align: center;
+    margin: 0;
+    font-family: "Montserrat", sans-serif;
+    letter-spacing: 1;
+    overflow: hidden;
+}
+div{ 
+    box-sizing: border-box;
+}
+textarea{
+    width: 80%;
+    height: 40%;
+}
+input{
+    
+}
+textarea, input{
+    background-color: var(--color2);
+    color: var(--color1);
+}
+/*ids*/
+#header{
+    position: fixed;
+    margin: 8px 16px;
+    top: 0;
+    bottom: auto;
+    height: 32px;
+    left: 0;
+    right:0;
+}
+#header>.button{
+    flex: 1;
+    display: flex;
+    margin:0;
+    cursor: pointer;
+}
+#header>.button>div{
+    margin: auto;
+}
+#header>*{
+    float: left;
+}
+#overlay{
+    position: fixed;
+    height: 100%;
+    z-index: 11;
+    display: none;
+    opacity: 0;
+    background-color: var(--color2);
+    left: 0;
+    width: 100%;
+}
+
+#content{
+    padding: 0;
+    position: absolute;
+    top: 88px;
+    bottom: 0;
+    left:0;
+    right:0;
+    overflow-y: auto;
+    word-break: break-word;
+}
+#sidebar{
+    text-align: left;
+    background-color: var(--color2);
+    color: var(--color1);
+    overflow: hidden;
+    position: fixed;
+    height:100%;
+    width:0;
+    top: 0;
+    left: 0;
+    z-index: 12;
+}
+#sidebar div{
+
+    margin: 10%;
+    cursor: pointer;
+}
+#sidebar .br, .box .br{
+    width: auto;
+    background-color: var(--color1);
+}
+#consoleIcon{
+    position: fixed;
+    right: 32px;
+    bottom: 32px;
+    width: 32px;
+    z-index: 9;
+}
+#networkConsole{
+
+    position: absolute;
+    width: 100%;
+    background-color: var(--color2);
+    color: var(--color1);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    padding: 0;
+    border: 0;
+    height: 0;
+    resize: none;
+    font-family: 'Share Tech Mono', monospace;
+    
+}
+#chainData{
+    overflow: auto;
+    height: calc(100vh - 164px);
+}
+#hd{
+    letter-spacing: 7px;
+    font-variant: small-caps;
+    font-weight: bold;
+    margin: 8px auto 0;
+    height: 48px;
+    width: calc(100% - 96px);
+    text-align: center;
+    cursor: pointer;
+    font-size: 28px;
+    font-family: "Montserrat", sans-serif;
+}
+#hb, #ac{
+    cursor: pointer;
+}
+#hb img, #ac img{
+    width: 48px;
+}
+#hb:hover div{
+    background-color: var(--color4);
+}
+/*classes*/
+.br{
+    margin:auto 2%;
+    width:96%;
+    height: 1px;
+    background-color: var(--color2);
+}
+.sel, #address{
+    user-select: initial;
+}
+.box{
+    border: 1px solid var(--color1);
+    color: var(--color1);
+    background-color: var(--color2);
+}
+.block{
+    height: 0; 
+    width:512px;
+    padding:12px 12px 500px;
+    margin: 1% auto;
+    overflow: hidden;
+    word-wrap: break-word;
+    font-size: 14px;
+}
+.box>div{
+    margin: 1%;
+}
+.button{
+    flex: 1;
+    margin:1.5% 1.5%;
+    padding:10px;
+    font-weight: 800;
+    border: 1px solid var(--color2);
+    color: var(--color2);
+    background-color: var(--color1);
+    cursor: pointer;
+}
+.button:hover{
+    background-color: var(--color4);
+}
+.pointer{
+    cursor: pointer;
+}
+.flex{display: flex;}
+.wrap{flex-wrap: wrap;}
+.flex>*{flex:1}
+.w1{width: 100%;}
+.w50{width: 50%;}
+h1{
+    text-align: center;
+    font-weight: 800;
+    margin-top: 6px;
+}
+#overlay{
+    background-color: black;
+    opacity: 0.2;
+    display: none;
+}
+#sidebar{
+    width: 0px;
+}
