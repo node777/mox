@@ -1,6 +1,10 @@
 const ethers = require('ethers');
+var fs = require('fs');
+var flatten = require('./flatten.js');
+
 var hydra={
   db:{
+    users:{},
     signatures:{
 
     }
@@ -8,17 +12,26 @@ var hydra={
   chains:{
   },
   create:(genisisBlock)=>{
-    console.log
     hydra.chains[genisisBlock.h]=[
       genisisBlock
     ]
     //console.log("created genisis "+JSON.stringify(this)+" for "+chain)
   },
+  load:(chain)=>{
+    hydra.chains[chain[0].h]=chain
+  },
+  save:(chain, fileLocation)=>{
+    fs.writeFile(fileLocation, flatten(hydra.chains[chain]),console.log);
+  },
   query:(chain, query, args)=>{
     if(query){
-      let c=hydra.chains[chain];
-      var r = c[0].chaincode[query](args);
-      return `query ${query} been invoked on chain ${chain}. Recieved response: ${r}`;
+      try{
+        let c=hydra.chains[chain];
+        var r = c[0].chaincode[query](args);
+        return r;
+      }catch(e){
+        return `could not execute query, got error ${e}`
+      }
     }
     else{
       return hydra.chains[chain];
@@ -26,10 +39,12 @@ var hydra={
   },
   invoke:(chain, invoke, body)=>{
 
+    console.log(body);
+
     //try to invoke function
     try{
       //get invoke data
-      var d=Object.keys(body)[0];
+      var d=body;
       var data =JSON.parse(d);
 
       //get chain
@@ -54,14 +69,13 @@ var hydra={
         }
         //verify signature
         var verifiedKey = ethers.utils.verifyMessage(JSON.stringify(b), sig);
-        
-        console.log(key, verifiedKey);
-
         if(verifiedKey.toLowerCase()!=key.toLowerCase()&&verifiedKey!=key){
+          console.log("Signature could not be verified")
           return "Signature could not be verified";
         }
         //check if signature exists in db
-        if(hydra.db.signatures[key]&&sig in hydra.db.signatures[key]){
+        if(hydra.db.signatures[key]&&hydra.db.signatures[key][sig] in hydra.db.signatures[key]){
+          console.log("signature repeat")
           return "Message already exists";
         }else{
           //add sig to db
@@ -69,12 +83,12 @@ var hydra={
         }
         //create transaction
         let tx= c[0].tx(ts, key, inv, msg, sig);
-        //ret add block
+        //add block
         c[0].block(tx); 
         return "Transaction added successfully"
       }
       else{
-        return `ERROR: chaincode invoke could not be found`;
+        return `Transaction Revert`;
       }
     }
     catch(err){

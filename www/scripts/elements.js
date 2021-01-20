@@ -26,7 +26,66 @@ var elements={
             catch(e){
                 r=`
                 <div>
-                    <h1>Welcome to the very first browser-based distributed blockchain network</h1>
+                    <h1 id="intro">Introducing Hydra</h1>
+                    <p id="tagline">The world's fastest, most lightweight, scalable, and versitile blockchain</p>
+                    <div id="hydraInfo">
+                        <section>
+                            <h2>Fast</h2>
+                            <h3>
+                                Average Hydra block time is around 0.01 seconds, and will never slow down when chain size increases<br>
+                                Faster than any blockchain on the market.
+                            </h3>
+                        </section>
+                        <section>
+                            <h2>Modular</h2>
+                            <h3>
+                                Hydra is ready out of the box for a veriety of business and industry use-cases.<br>
+
+                            
+                        </section>
+                        <section>
+                            <h2>Lightweight</h2>
+                            <h3>Code to run a barebones hydra node is 2.16kb</h3>
+                        </section>
+                        <section>
+                            <h2>Scalable</h2>
+                            <h3>
+                                Bitcoin chain size per 1,000,000 txs: 857 gigabytes<br>
+                                Hydra chain size per 1,000,000 txs: 3.9 gigabytes
+
+                            </h3>
+                        </section>
+                        <section>
+                            <h2>Modular</h2>
+                            <h3>
+                                With hydra you have full control over functionality without having to worry about impacting security.<br>
+                                Hydra is preconfigured for a veriety of different consensus protocols, including but not limited to: PoS, PoW, PoeT, Proof of Storage, among many others.<br>
+                            </h3>
+                        </section>
+                        <section>
+                            <h2>Secure</h2>
+                            <h3>
+                                Bitcoin chain size per 1,000,000 transactions: 857 gigabytes
+                                Hydra chain size per 1,000,000 transactions: 3.9 gigabytes
+
+                            </h3>
+                        </section>
+                        <section>
+                            <h2>The future of blockchain is mobile</h2>
+                            <h3>
+                                Hydra is the world's first blockchain that can run an entire node in the browser, a feat that was not even possible until very recently.<br>
+                                This means that you can distribute your code to your clients, and have them uphold your network without ever having to download anything.<br>
+                                Because of this, Hydra is perfect for deploying blockchain-based mesh networks, and browser applications.
+                            </h3>
+                        </section>
+                        <section>
+                            <h2>Hydra is better</h2>
+                            <h3>
+                                Hydra is built with large scale enterprise in mind. <br><br>
+                                Not only is the space and time complexity of Hydra far superior to anything availible, but because chaincode is all in webAssembely, this allows developers to develop systems in their favorite language.
+                            </h3>
+                        </section>
+                    </div>
                     <div class="w50 button" onclick="location.hash='connect'">Connect</div>
                 </div>
                 `;
@@ -36,37 +95,55 @@ var elements={
         'account': async()=>{
             try{
                 let wb;
-                if(hydra.account.type=="web3"||hydra.account.type=="torus"){
+                if(!hydra.account){
+                    location.hash="connect"
+                    return false
+                }
+                else if(hydra.account.type=="web3"||hydra.account.type=="torus"){
                     try{
-                        
+                        var p, n;
+
                         if(!hydra.balance){
                             await hydra.getBalance();
                         }
-                        if(!hydra.provider){
-                            await hydra.load();
+                        if(hydra.provider){
+                            p=await hydra.provider;
+                            n=await hydra.provider.network;
+                            
+                            wb=`
+                            Provider:<br>${hydra.account.type||"none"}<br><br>
+                            Selected Address:<br>${hydra.provider.provider.selectedAddress||"None: Please login to provider"}<br><br>
+                            Network:<br>${n.name||"none"}<br><br>
+                            Bal: ${hydra.account.balance}<br>`
+                            /*
+                            Provider Network: ${nn||"none"}<br>
+
+                            Network ENS: ${(p.tetwork.ensAddress)||"none"}<br>
+
+                            Selected Address: ${(p.getBalance(p.provider.selectedAddress))||"none"}<br>`
+                            */
+                        }else{
+                            //await hydra.load();
+                            wb=""
+                            hux.load()
+                            console.log(p, n, hydra.balance);
                         }
-                    
-                        var p =await hydra.provider;
-                        let n =await hydra.provider.network;
-                        console.log(p, n, hydra.balance);
-                        wb=`
-                        Provider:<br>${hydra.account.type||"none"}<br><br>
-                        Selected Address:<br>${hydra.provider.provider.selectedAddress||"None: Please login to provider"}<br><br>
-                        Network:<br>${n.name||"none"}<br><br>
-                        Bal: ${hydra.account.balance}<br>`/*
-                        Provider Network: ${nn||"none"}<br>
-                        
-                        Network ENS: ${(p.tetwork.ensAddress)||"none"}<br>
-                        Selected Address: ${(p.getBalance(p.provider.selectedAddress))||"none"}<br>`
-                        */
+                        if(hydra.account.type=="web3"){
+                            try{
+                                await ethereum.send('eth_requestAccounts');
+                            }catch(e){
+                                console.log(e);
+                            }
+                        }
+
                     }catch(e){
                         console.log(e);
-                        hydra.load();
+                        return elements.loading;
                     }
                 }
                 else if(hydra.account.type=="key"){
                     wb=`
-                    Address: <div id="address" value='${hydra.account.wallets[0].signingKey.address}'>${hydra.account.wallets[0].signingKey.address}</div><div class="button" onclick="hux.copyKey()">Copy</div><br><br>`
+                    Address: <input id="account_address" value='${hydra.wallet.address}'></input><div class="button" onclick="hux.copyKey()">Copy</div><br><br>`
                     
                 }
                 return`
@@ -78,9 +155,7 @@ var elements={
 
             }catch(e){
                 console.log(e);
-                return `
-                    No Account Found, please connect
-                    <div class="w50 button" onclick="location.hash='connect';">Connect</div>`
+                return elements.pages.connect();
             }
         },
         "connect":()=>{
@@ -89,11 +164,20 @@ var elements={
             }else{
                 return `
                     No account could be found on this device, would you like to import or create a new one?
+                    <input id="email" placeholder="e-mail"></input>
+                    <div class="w50 button" onclick="hydra.connect('email');">Connect with Email</div>
                     <div class="w50 button" onclick="hydra.connect('web3');">Import From Provider (coinbase/metamask/web3)</div>
                     <div class="w50 button" onclick="hydra.connect('torus');">Connect with Torus</div>
+                    <div class="w50 button" onclick="location.hash='import'">Import Key</div>
                     <div class="w50 button" onclick="hydra.connect('create');">Create New</div>
                 `;
             }
+        },
+        "import":()=>{
+            return `
+                <input id="privateKey" placeholder="Private Key"></input>
+                <div class="button">Import</div>
+            `
         },
         "chains": function(){
             if(hydra.account){
@@ -111,6 +195,9 @@ var elements={
                     <div class="w1 flex box">
                         <div class="chain button" onclick="location.hash='addChain'">
                             +<br><br>Add chain
+                        </div>
+                        <div class="chain button" onclick="hydra.addChain(1)">
+                            +<br><br>Add all chains
                         </div>
                         <div class="chain button" onclick="location.hash='createChain'">
                             +<br><br>Create chain
@@ -137,7 +224,7 @@ var elements={
             hux.cid =c[1];
             setTimeout(hux.query, 1)
             return `
-                chain ip: ${hux.chainData().ip}<br><br>
+                chain ip: ${hux.chainData()?hux.chainData().ip:"Chain could not be located"}<br><br>
 
                 <div class="flex wrap">
                     <div>
@@ -181,6 +268,9 @@ var elements={
                                     <div class="chain button" onclick="hux.invoke()">
                                         ChainCode Invoke<br>(post)
                                     </div>
+                                    <div class="chain button" onclick="hux.invoke(1000)">
+                                        ChainCode Invoke x10000<br>(post)
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -214,40 +304,41 @@ var elements={
         "playground":async()=>{
 
             if(hydra.account){
-                try{
-                    if(!hydra.balance){
-                        await hydra.getBalance();
-                    }
-                    let trasaction = {
-                        from: web3.currentProvider.selectedAddress,
-                        to: "0x0B749995DCC89674Eb04846e5063857062576386",
-                        value: web3.toWei(0.0777, "ether")
-                    }
-                    let tx=JSON.stringify(trasaction);
-                    console.log(tx);
-                    return `
-                            <h1>Welcome Home</h1>
-                            <div>
-                                Add: ${hydra.provider.provider.selectedAddress}<br>
-                                Bal: ${hydra.account.balance}<br>
-                            </div>
-                            <div>
-                                <textarea id="tx">${tx}</textarea>
-                                
-                                <div class="button" onclick="hydra.sendTransaction()">Send Transaction</div>
-                            </div>
-                    `
+                if(!hydra.balance){
+                    await hydra.getBalance();
                 }
-                catch{
-                    return "please log in to web3 Provider"
+                let address
+                if(hydra.account.type=="key"){
+                    address=hydra.wallet.address;
+                }else if(hydra.provider){
+                    address=hydra.provider.provider.selectedAddress;
                 }
+                let trasaction = {
+                    from: address,
+                    to: "0x0B749995DCC89674Eb04846e5063857062576386",
+                    value: web3.toWei(0.0777, "ether")
+                }
+                let tx=JSON.stringify(trasaction);
+                console.log(tx);
+                return `
+                        <h1>Welcome Home</h1>
+                        <div>
+                            Address: ${address}<br>
+                            Balance: ${hydra.account.balance}<br>
+                        </div>
+                        <div>
+                            <textarea id="tx">${tx}</textarea>
+                            
+                            <div class="button" onclick="hydra.sendTransaction(JSON.parse(document.getElementById('tx').value))">Send Transaction</div>
+                        </div>
+                `
             }
             else{
                 return "please log in"
             }
         },
         404: function(){
-            return `Could not find url hash endpoint`;
+            return "Page could not be loaded";
         }
     },
     "header": `
@@ -269,4 +360,3 @@ var elements={
     `,
     "loading":`Loading...`
 }
-O(n)

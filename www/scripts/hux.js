@@ -1,5 +1,23 @@
 var hux={
     cid:0,
+    account:()=>{
+        if(location.hash=="account"){
+            lux.changePage();
+        }else{
+            location.hash="account"
+        }
+    },
+    connect: function(){
+      if(hydra.account){
+        location.hash="account";
+      }
+      else{
+        location.hash = "connect";
+      }
+    },
+    load:()=>{
+        document.getElementById("content").innerHTML=elements.loading;
+    },
     chainData: function(){
         return hydra.chains[this.cid]
     },
@@ -12,9 +30,9 @@ var hux={
     getChain: function(){
         try{
             let r="";
-            let blockObj=hydra.get(hux.chainData().ip);
-            console.log(blockObj);
-            let blocks=JSON.parse(blockObj);
+            hydra.chains[this.cid].blocks=JSON.parse(hydra.get(hux.chainData().ip));
+            console.log(hydra.chains[this.cid].blocks)
+            let blocks=hydra.chains[this.cid].blocks;
             for(block in blocks){
                 var b = blocks[block];
                 console.log(b);
@@ -43,22 +61,29 @@ var hux={
             }
             document.getElementById('chainData').innerHTML= r;
             document.getElementById('chainInfo').innerHTML= `Length: ${Object.keys(blocks).length}`;
-        }catch(e){console.log(e);alert(`Could not reach chain`)}
+        }catch(e){console.trace(e);alert(`Could not reach chain`)}
     },
     queryChain: function(){
         var d=hydra.get(hux.get()+document.getElementById('get').value);
         document.getElementById('opInfo').innerHTML= d;
     },
-    invoke: function(){
-        var u =hux.post()+document.getElementById('invoke').value;
-        var d=document.getElementById('iData').value;
-        hydra.post(u, d);
+    invoke: function(a){
+        if(a){
+            for(i=0;i<a;i++){
+                console.log("invoking");
+                hux.invoke();
+            }
+        }else{
+            var u =hux.post()+document.getElementById('invoke').value;
+            var d=document.getElementById('iData').value;
+            hydra.post(u, d);
+        }
     },
     postResponse:(r)=>{
         document.getElementById("opInfo").innerHTML=r;
     },
     copyKey:()=>{
-        var copyText = document.getElementById("address").value;
+        var copyText = document.getElementById("account_address");
         copyText.select();
         copyText.setSelectionRange(0, 99999);
         document.execCommand("copy");

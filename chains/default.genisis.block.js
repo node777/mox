@@ -1,5 +1,6 @@
 const crypto =require('crypto');
 const hydra=require("../hydra-chain.js");
+const flatten=require("../flatten.js");
 
 
 var defaultGenisis={
@@ -22,13 +23,15 @@ var defaultGenisis={
     return transaction;
   },
   block:(tx)=>{
-    console.log(hydra.chains[defaultGenisis.h], defaultGenisis.h);
+    //console.log(hydra.chains[defaultGenisis.h], defaultGenisis.h);
     //get previous hash from last block and add to this one as p
     tx.p=hydra.chains[defaultGenisis.h][hydra.chains[defaultGenisis.h].length-1].h
     //hash this block, and add to h
     tx.h=defaultGenisis.hash(JSON.stringify(tx));
     //push block onto chain
-    hydra.chains[defaultGenisis.h].push(tx);
+    //hydra.chains[defaultGenisis.h].push(tx);
+    //save entire chain to db
+    //hydra.save(chain, `chains/${chain}.js`);
     return tx
   },
   chaincode:{
@@ -38,41 +41,57 @@ var defaultGenisis={
     write:function(data){
       let d=JSON.parse(data);
       hydra.db[d.k.toLowerCase()]=d.m;
-      console.log(hydra.db[d.k], d.k);
+      //console.log(hydra.db[d.k], d.k);
       return `added value ${d.m} to location ${d.k}\n: String(data)`
     },
     read:(data)=>{
-      console.log(hydra.db, data);
+      //console.log(hydra.db, data);
       var r = hydra.db[data.toLowerCase()];
       //console.log(data.toString(), hydra.db, r);
-      return `read data ${r}`
-    }
-  },
-}
-
-
-function flatten(obj){
-  //todo fix this flatten fn, maye just find replacement
-  var r=``;
-  for(subObj in obj){
-    var s =obj[subObj];
-    //if subobj is func
-    if(!!(s && s.constructor && s.call && s.apply)){
-      r+=s.toString()
-      //console.log(s.toString());
-    }
-    else if(typeof s === 'string' || s instanceof String){
-      r+=s;
-    }
-    else{
-      r+=JSON.stringify(flatten(s));
-      //console.log(JSON.stringify(s));
+      return r
     }
   }
-  //console.log(r);
-  return r;
 }
 
+
+// let testObj=[
+//   (r)=>{return r},
+//   {
+//     f:(m)=>{return m},
+//     o:{
+//       e:[
+//         9.5,
+//         (l)=>{return l}
+//       ]
+//     },
+//     n:{
+//       b:true,
+//       u:undefined,
+//       n:null
+//     }
+//   }
+// ]
+
+// let t=[
+//   (r)=>{return r},
+//   {
+//     f:(m)=>{return m},
+//     o:{
+//       e:[
+//         9.5,
+//         (l)=>{return l}
+//       ]
+//     },
+//     n:{
+//       b:true,
+//       u:undefined,
+//       n:null
+//     }
+//   }
+// ]
+
+
 let g=flatten(defaultGenisis);
+//console.log(g);
 defaultGenisis.h=defaultGenisis.hash(g);
 module.exports=defaultGenisis;
