@@ -15,6 +15,17 @@ var hux={
         location.hash = "connect";
       }
     },
+    createAccountPage:()=>{
+        document.getElementById("content").innerHTML=elements.createAccount();
+    },
+    createAccount:()=>{
+        let email=document.getElementById("email").value;
+        let accountData={
+            email:email,
+            someInfo:"some value"
+        }
+        hydra.editAccount(accountData);
+    },
     load:()=>{
         document.getElementById("content").innerHTML=elements.loading;
     },

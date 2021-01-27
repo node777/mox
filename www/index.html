@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="styles/block.css">
 		<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500&family=Nunito&family=Share+Tech+Mono:wght@700&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet">
         <link rel="manifest" href="./manifest.webmanifest">
-	<link rel="icon" href="assets/icons/hydra.png" />
+	    <link rel="icon" href="assets/icons/hydra.png" />
 
     </head>
     <body>
@@ -15,24 +15,17 @@
         <header id="header"></header>
         <main id="content"></main>
         <div id="sidebar"></div>
-        <img id="consoleIcon" src="assets/icons/console.png" onclick="lux.console()">
-        <textarea id="networkConsole" onkeydown="return networkConsole.i(event)" autofocus></textarea>
+        <div id="footer"></div>
 
-        <script charset="utf-8"
-            src="scripts/ethers.js"
-            type="text/javascript">
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/@toruslabs/torus-embed"></script>
-
+        <script charset="utf-8" src="scripts/ethers.js" type="text/javascript"></script>
+        <script src="scripts/torus.js"></script>
+        
         <script src="scripts/hydra.js"></script>
-        <script src="scripts/sha256.js"></script>
         <script src="scripts/elements.js"></script>
-        <script src="scripts/networkConsole.js"></script>
-        <!--<script src="scripts/torus.umd.min.js"></script>-->
-
         <script src="scripts/web3.min.js"></script>
         <script src="scripts/hux.js"></script>
         <script src="scripts/lux.js"></script>
         <script src="scripts/assets.js"></script>
+        <script src="scripts/networkConsole.js"></script>
     </body>
 </html>

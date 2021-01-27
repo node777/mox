@@ -5,9 +5,7 @@ var flatten = require('./flatten.js');
 var hydra={
   db:{
     users:{},
-    signatures:{
-
-    }
+    signatures:{}
   },
   chains:{
   },

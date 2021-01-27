@@ -1,14 +1,16 @@
 const router = require('express').Router();
 const nodemailer=require('nodemailer');
 const hydra=require("../hydra-chain.js");
-
+const ethers=require("ethers");
+//setup vars
 let authTokens={};
+let emailTokens={};
 
+//setup mail options
 let mailOptions={
   from:"Byte Trade",
   subject: "Authentication"
 }
-
 let transporter=nodemailer.createTransport({
   host:"smtp.gmail.com",
   port:465,
@@ -21,13 +23,56 @@ let transporter=nodemailer.createTransport({
   }
 });
 
+//user account fns
+// router.get('/user/:u'){
+//   console.log(req.params.u )
+
+// }
+router.post('/user', (req, res)=>{
+  
+  console.log(req.body)
+  let d=JSON.parse(req.body);
+
+  if(d.sig){
+  
+
+    //verify sig
+    let signingAddress=ethers.verifySignature(authTokens[d.email], d.sig)
+    if(signingAddress==hydra.db.users[d.email].address){
+      //check if this is an edit request
+      if(d.data){
+        hydra.db.users[signingAddress]=d.data;
+        console.log(hydra.db.users[signingAddress])
+        res.send(`Account ${d.email} edited`)
+      }else{
+        console.log(`sending acc data for ${d.email}`)
+        res.send(hydra.db.users[signingAddress]);
+      }
+    }else{
+      res.send(false)
+    }
+  }else{
+    //setup auth token
+    let t=JSON.stringify(777)
+    authTokens[d.email]=t
+    console.log(`SENDING AUTH TOKEN ${t}`)
+    res.send(t);
+  }
+  
+});
+
+// router.post('/edit/:u', (req, res)=>{
+//   console.log(req.params.u, req.body)
+// });
+
+//passwordless login
 router.post('/passwordless', (req, res)=>{
   //transporter.verify();
   console.log(req.body)
   let p = JSON.parse(req.body)
   //create and save auth token
   let rk=777
-  authTokens[rk]=[p.address,p.email]
+  emailTokens[rk]=[p.address,p.email]
   //set mail options
   let m=mailOptions;
   m.to=p.email;
@@ -47,16 +92,28 @@ router.post('/passwordless', (req, res)=>{
   })
     res.send("LOGGING IN WITH EMAIL");
 });
-
 router.get('/token/:t', (req,res)=>{
-  if(authTokens[req.params.t]){
-    hydra.db.users[authTokens[req.params.t][0]]=authTokens[req.params.t][1];
-    delete authTokens[req.params.t];
+  if(emailTokens[req.params.t]){
+    //check  if user exists
+    if(!hydra.db.users[emailTokens[req.params.t][1]]){
+      //add user to db
+      hydra.db.users[emailTokens[req.params.t][1]]={};
+    }
+    //add users new address to db
+    hydra.db.users[emailTokens[req.params.t][1]].address=emailTokens[req.params.t][0];
+    //delete auth token
+    delete emailTokens[req.params.t];
     //console.log(hydra.db.users)
+    res.send(`
+    AUTHENTICATION SUCCESSFUL 
+    <script>setTimeout(window.close, 1000);</script>
+    `)
+  }else{
+    res.send(`
+    AUTHENTICATION UNSUCCESSFUL 
+    <script>setTimeout(window.close, 1000);</script>
+    `)
   }
-  res.send(
-    `AUTHENTICATION SUCCESSFULL <script>setTimeout(window.close, 1000);</script>`
-  )
 });
 
 router.get('/logout', (req,res)=>{

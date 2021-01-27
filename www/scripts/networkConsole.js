@@ -2,8 +2,8 @@
 var networkConsole = {
     pos:0,
     t: document.getElementById("networkConsole"),
-    i:function(e){
-        console.log("user input: "+e.key);
+    i(e){
+        //console.log("user input: "+e.key);
         switch(e.key){
             case "Backspace": 
                 if(networkConsole.t.selectionStart>networkConsole.pos){
@@ -19,7 +19,8 @@ var networkConsole = {
                 
             case "Enter":
                 let t=networkConsole.t.value.substr(networkConsole.pos, networkConsole.t.value.length);
-                this.log();
+                //this.log();
+                this.t.value+=`\n~`
                 if(this.inputCallback){
                     var c = this.inputCallback;
                     this.inputCallback=undefined;
@@ -51,20 +52,18 @@ var networkConsole = {
 
         }
     },
-    log: function(m){
+    mouseUp(e){
+        //console.log(e)
+        if(networkConsole.t.selectionStart==networkConsole.t.selectionEnd){
+            networkConsole.t.selectionStart=networkConsole.pos
+        }
+    },
+    log(m){
         networkConsole.t.value+=`${(m||"")}\n>`;
         this.pos=networkConsole.t.value.length;
         networkConsole.t.scrollTop = networkConsole.t.scrollHeight;
     },
-    input: function(m, callback){
-        //console.log("input setting up");
-        this.inputCallback = callback;
-        networkConsole.t.value+=`${m}`;
-        this.pos=networkConsole.t.value.length;
-        networkConsole.t.scrollTop = networkConsole.t.scrollHeight;
-        console.log(this.inputCallback);
-    },
-    execute: function(c){
+    execute(c){
         if(c!=""){
             this.lastCommand=c;
             let cl=c.split(" ");
@@ -77,13 +76,22 @@ var networkConsole = {
             }
         }
     },
+    
+    input(m, callback){
+        //console.log("input setting up");
+        this.inputCallback = callback;
+        networkConsole.t.value+=`${m}`;
+        this.pos=networkConsole.t.value.length;
+        networkConsole.t.scrollTop = networkConsole.t.scrollHeight;
+        console.log(this.inputCallback);
+    },
     commands: {
         clear: function(){
             networkConsole.t.value="";
             networkConsole.log(`Network Console`);
         },
         feedMe: function(){
-            networkConsole.input("feed me text ", function(r){
+            networkConsole.input("feed me text\n>", function(r){
                 networkConsole.log(`you said ${r}`);
             });
         },

@@ -198,18 +198,10 @@ var hydra = {
           return null
         }
       }
-      // else{
-      //   try{
-      //     return hydra.account.wallets[0].signingKey.address
-      //   }catch(e){
-      //     alert(e);
-      //     return null
-      //   }
-      // }
     };
     if(k()!=null){
       var c = JSON.parse(hydra.get(hydra.chains[hux.cid].ip));
-      let prevHash=c[c.length-1].h;
+      //let prevHash=c[c.length-1].h;
       var block={
         c:chainHash,
         t:Date.now(),
@@ -233,7 +225,7 @@ var hydra = {
         x.setRequestHeader("Content-type", "text/plain");
         x.send(JSON.stringify(block));
       }
-      catch{
+      catch(e){
       }
     }else{
       alert("No wallet connected");
@@ -282,8 +274,8 @@ var hydra = {
     // .then((m)=>{
     //   console.log(m);
     // })
-   },
-  clear: function(){
+  },
+  clear:()=>{
     if(hydra.account.type=="torus"){
       torus.logout();
     }
@@ -292,5 +284,47 @@ var hydra = {
     hydra.chains=[];
     
     location.reload();
+  },
+  editAccount:(info)=>{
+
+    //setup XML
+    let ip= `/auth/user`;
+
+    var authTokenReq=new XMLHttpRequest();
+    authTokenReq.onreadystatechange =async function() {
+      if(this.readyState == 4 && this.status == 200) {
+        //get auth token
+        console.log(this.responseText);
+        let authToken=this.responseText;
+
+        //sign auth token
+        //info.timestamp=Date.now();
+        let sig= await hydra.sign(authToken);
+        
+        //setup req data
+        let reqData={
+          "email":info.email,
+          "sig":sig
+        }
+        delete info.email
+        reqData.data=info
+
+        //setup xml
+        var x = new XMLHttpRequest();
+        x.onreadystatechange = function() {
+          if(this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText)
+          }
+        };
+        
+        x.open("POST", ip, true);
+        x.setRequestHeader("Content-type", "text/plain");
+        x.send(JSON.stringify(reqData));
+      }
+    };
+    authTokenReq.open("POST", ip, true);
+    authTokenReq.setRequestHeader("Content-type", "text/plain");
+    authTokenReq.send(JSON.stringify({"email":info.email}));
+    
   }
 };

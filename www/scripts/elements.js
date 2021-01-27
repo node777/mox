@@ -150,8 +150,10 @@ var elements={
                     <h1>Account Info:</h1>
                     <br><br>
                     `+wb+
-                    `<div class="button" onclick="location.hash='chains'">Chains</div>`+
-                    `<div class="button" onclick="hydra.clear();">Scrub</div>`;
+                    `
+                    <div class="button" onclick="hux.createAccountPage()">Edit Account</div>
+                    <div class="button" onclick="location.hash='chains'">Chains</div>
+                    <div class="button" onclick="hydra.clear();">Scrub</div>`;
 
             }catch(e){
                 console.log(e);
@@ -358,5 +360,16 @@ var elements={
         <div class="br"></div>
         <div onclick="location.hash='account';"><div>Account</div></div>
     `,
+    footer:`
+        <img id="consoleIcon" src="assets/icons/console.png" onclick="lux.console()">
+        <textarea id="networkConsole" onmouseup="networkConsole.mouseUp(event)" onkeydown="return networkConsole.i(event)" spellcheck="false" autofocus></textarea>
+    `,
+    createAccount:()=>{
+        return `
+            <input id="email" placeholder="email"></input>
+            <input id="accountInfo" placeholder="info"></input>
+            <div class="button" onclick="hux.createAccount()">Create Account</div>
+        `
+    },
     "loading":`Loading...`
 }

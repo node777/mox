@@ -12,8 +12,11 @@ var lux={
         lux.t.innerHTML = await elements.pages[p](a?a:null)||elements.pages["404"]();
     },
     setup: async function(){
-        document.getElementById("header").innerHTML=elements.header;
-        document.getElementById("sidebar").innerHTML=elements.sidebar;
+        let s=["header","sidebar","footer"]
+        for(i in s){
+            console.log(i)
+            document.getElementById(s[i]).innerHTML=elements[s[i]];
+        }
         await hydra.load();
         await lux.changePage();
         window.addEventListener("hashchange", this.changePage, false);
